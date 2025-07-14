@@ -1,6 +1,6 @@
 # undetected-chromedriver-js
 
-Un wrapper Node.js pour undetected-chromedriver avec configuration automatique et support multi-plateforme.
+A Node.js wrapper for undetected-chromedriver with automatic setup and cross-platform support.
 
 ## 🚀 Installation
 
@@ -8,65 +8,65 @@ Un wrapper Node.js pour undetected-chromedriver avec configuration automatique e
 npm install undetected-chromedriver-js
 ```
 
-Le script d'installation configurera automatiquement l'environnement Python. L'exécutable sera généré lors de la première utilisation.
+The installation script will automatically configure the Python environment. The executable will be generated on first use.
 
-### Installation manuelle (si problèmes)
+### Manual installation (if issues occur)
 
 ```bash
-# Installation minimal
+# Minimal installation
 npm run setup:minimal
 
-# Installation complète (génère l'exécutable immédiatement)  
+# Full installation (generates executable immediately)  
 npm run setup
 ```
 
-## 📋 Prérequis
+## 📋 Prerequisites
 
-- **Node.js** 14.0.0 ou supérieur
-- **Python** 3.7 ou supérieur  
-- **Google Chrome** installé sur le système
-  - 📥 Télécharger : https://www.google.com/chrome/
+- **Node.js** 14.0.0 or higher
+- **Python** 3.7 or higher  
+- **Google Chrome** installed on the system
+  - 📥 Download: https://www.google.com/chrome/
 
-## ⚡ Usage Rapide
+## ⚡ Quick Usage
 
 ```javascript
 const UndetectedChrome = require('undetected-chromedriver-js');
 
 async function example() {
-  // Création simple
+  // Simple creation
   const undetectedChrome = new UndetectedChrome();
   const driver = await undetectedChrome.build();
 
   // Navigation
   await driver.get('https://nowsecure.nl/');
   
-  // Votre code de scraping ici
+  // Your scraping code here
   const title = await driver.getTitle();
-  console.log('Titre:', title);
+  console.log('Title:', title);
 
-  // Fermeture
+  // Close
   await undetectedChrome.quit();
 }
 
 example().catch(console.error);
 ```
 
-## 🛠️ Configuration Avancée
+## 🛠️ Advanced Configuration
 
-### Options disponibles
+### Available options
 
 ```javascript
 const undetectedChrome = new UndetectedChrome({
-  headless: false,                    // Mode headless
-  userAgent: 'custom-user-agent',     // User agent personnalisé
-  windowSize: { width: 1920, height: 1080 }, // Taille de fenêtre
-  chromePath: '/path/to/chrome',      // Chemin Chrome personnalisé
-  driverPath: '/path/to/driver',      // Chemin driver personnalisé
-  arguments: ['--custom-arg']         // Arguments Chrome personnalisés
+  headless: false,                    // Headless mode
+  userAgent: 'custom-user-agent',     // Custom user agent
+  windowSize: { width: 1920, height: 1080 }, // Window size
+  chromePath: '/path/to/chrome',      // Custom Chrome path
+  driverPath: '/path/to/driver',      // Custom driver path
+  arguments: ['--custom-arg']         // Custom Chrome arguments
 });
 ```
 
-### Exemple complet
+### Complete example
 
 ```javascript
 const UndetectedChrome = require('undetected-chromedriver-js');
@@ -74,7 +74,7 @@ const UndetectedChrome = require('undetected-chromedriver-js');
 async function advancedExample() {
   const undetectedChrome = new UndetectedChrome({
     headless: true,
-    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebDriver/537.36',
     windowSize: { width: 1366, height: 768 },
     arguments: [
       '--disable-notifications',
@@ -85,21 +85,21 @@ async function advancedExample() {
   try {
     const driver = await undetectedChrome.build();
     
-    // Scraping d'un site protégé
+    // Scraping a protected site
     await driver.get('https://example.com');
     
-    // Attendre le chargement
+    // Wait for loading
     await driver.sleep(2000);
     
-    // Extraire des données
+    // Extract data
     const elements = await driver.findElements({ css: '.data-item' });
     for (const element of elements) {
       const text = await element.getText();
-      console.log('Données:', text);
+      console.log('Data:', text);
     }
 
   } catch (error) {
-    console.error('Erreur:', error.message);
+    console.error('Error:', error.message);
   } finally {
     await undetectedChrome.quit();
   }
@@ -108,96 +108,92 @@ async function advancedExample() {
 advancedExample();
 ```
 
-## 🔧 Méthodes disponibles
+## 🔧 Available Methods
 
-### Classe UndetectedChrome
+### UndetectedChrome Class
 
 #### `constructor(options)`
-Crée une nouvelle instance avec les options spécifiées.
+Creates a new instance with specified options.
 
 #### `async build()`
-Construit et configure le driver Chrome.
+Builds and configures the Chrome driver.
 
 #### `async get(url)`
-Navigue vers l'URL spécifiée. Construit automatiquement le driver si nécessaire.
+Navigates to the specified URL. Automatically builds the driver if needed.
 
 #### `async quit()`
-Ferme le navigateur et libère les ressources.
+Closes the browser and releases resources.
 
 #### `getDriver()`
-Retourne l'instance du driver Selenium pour un contrôle avancé.
+Returns the Selenium driver instance for advanced control.
 
 #### `static async create(options)`
-Méthode statique pour créer et construire une instance en une étape.
+Static method to create and build an instance in one step.
 
 ```javascript
-// Méthode statique
+// Static method
 const undetectedChrome = await UndetectedChrome.create({ headless: true });
 const driver = undetectedChrome.getDriver();
 ```
 
-## 🧪 Tests
+## 🧪 Testing
 
 ```bash
-# Tests basiques
+# Basic tests
 npm test
 
-# Configuration manuelle (si l'installation automatique échoue)
+# Manual configuration (if automatic installation fails)
 npm run setup
 ```
 
-## 🌍 Support Multi-Plateforme
+## 🌍 Cross-Platform Support
 
-Le module détecte automatiquement le système d'exploitation et configure les chemins appropriés :
+The module automatically detects the operating system and configures appropriate paths:
 
-- **Windows** : `AppData/Roaming/undetected_chromedriver/`
-- **macOS** : `~/Library/Application Support/undetected_chromedriver/`
-- **Linux** : `~/.local/share/undetected_chromedriver/`
+- **Windows**: `AppData/Roaming/undetected_chromedriver/`
+- **macOS**: `~/Library/Application Support/undetected_chromedriver/`
+- **Linux**: `~/.local/share/undetected_chromedriver/`
 
-## 🔍 Dépannage
+## 🔍 Troubleshooting
 
-### Erreur "Chrome not found"
+### Error "Python not found"
 ```bash
-# Vérifiez l'installation de Chrome
-google-chrome --version  # Linux
-# ou
-"C:/Program Files/Google/Chrome/Application/chrome.exe" --version  # Windows
-```
+# Check Python installation
+python --version  # Windows
+python3 --version # Linux/macOS
 
-### Erreur "Python not found"
-```bash
-# Installez Python
+# Install Python
 sudo apt install python3 python3-pip  # Ubuntu/Debian
-# ou téléchargez depuis https://python.org
+# or download from https://python.org
 ```
 
-### Erreur "Undetected ChromeDriver not found"
+### Error "Undetected ChromeDriver not found"
 ```bash
-# Relancez la configuration
+# Re-run configuration
 npm run setup
 ```
 
-### Erreur "Chrome browser not found"
+### Error "Chrome browser not found"
 ```bash
-# Installer Google Chrome depuis:
+# Install Google Chrome from:
 # https://www.google.com/chrome/
 
-# Ou spécifier le chemin manuellement:
+# Or specify path manually:
 const chrome = new UndetectedChrome({
   chromePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
 });
 ```
 
-### Problèmes Windows (permissions/Unicode)
+### Windows Issues (permissions/Unicode)
 ```bash
-# Nettoyage spécial Windows
+# Special Windows cleanup
 npm run clean:windows
 
-# Puis réinstaller
+# Then reinstall
 npm run setup
 ```
 
-## 📚 Exemples d'Usage
+## 📚 Usage Examples
 
 ### Bypass Cloudflare
 ```javascript
@@ -209,62 +205,62 @@ async function bypassCloudflare() {
   
   await driver.get('https://site-with-cloudflare.com');
   
-  // Attendre le bypass Cloudflare
+  // Wait for Cloudflare bypass
   await driver.sleep(5000);
   
-  // Continuer le scraping
+  // Continue scraping
   const content = await driver.getPageSource();
-  console.log('Contenu récupéré:', content.length, 'caractères');
+  console.log('Content retrieved:', content.length, 'characters');
   
   await undetectedChrome.quit();
 }
 ```
 
-### Scraping avec authentification
+### Scraping with Authentication
 ```javascript
 async function scrapingWithAuth() {
   const undetectedChrome = new UndetectedChrome();
   const driver = await undetectedChrome.build();
   
-  // Page de connexion
+  // Login page
   await driver.get('https://example.com/login');
   
-  // Remplir le formulaire
+  // Fill form
   await driver.findElement({ name: 'username' }).sendKeys('user');
   await driver.findElement({ name: 'password' }).sendKeys('pass');
   await driver.findElement({ css: 'button[type="submit"]' }).click();
   
-  // Attendre la redirection
+  // Wait for redirect
   await driver.sleep(3000);
   
-  // Scraping de la page protégée
+  // Scrape protected page
   await driver.get('https://example.com/protected');
   const data = await driver.findElement({ css: '.protected-data' }).getText();
   
-  console.log('Données protégées:', data);
+  console.log('Protected data:', data);
   await undetectedChrome.quit();
 }
 ```
 
-## 🤝 Contribution
+## 🤝 Contributing
 
-Les contributions sont les bienvenues ! N'hésitez pas à :
+Contributions are welcome! Feel free to:
 
-1. Fork le projet
-2. Créer une branche (`git checkout -b feature/nouvelle-fonctionnalite`)
-3. Commit vos changements (`git commit -m 'Ajout nouvelle fonctionnalité'`)
-4. Push vers la branche (`git push origin feature/nouvelle-fonctionnalite`)
-5. Ouvrir une Pull Request
+1. Fork the project
+2. Create a branch (`git checkout -b feature/new-feature`)
+3. Commit your changes (`git commit -m 'Add new feature'`)
+4. Push to the branch (`git push origin feature/new-feature`)
+5. Open a Pull Request
 
-## 📄 Licence
+## 📄 License
 
-MIT License - voir le fichier [LICENSE](LICENSE) pour plus de détails.
+MIT License - see the [LICENSE](LICENSE) file for details.
 
-## ⚠️ Avertissement
+## ⚠️ Disclaimer
 
-Ce module est destiné à des fins éducatives et de test uniquement. Respectez les conditions d'utilisation des sites web et les lois locales concernant le web scraping.
+This module is intended for educational and testing purposes only. Please respect website terms of service and local laws regarding web scraping.
 
-## 🔗 Liens Utiles
+## 🔗 Useful Links
 
 - [Selenium WebDriver Documentation](https://selenium-webdriver.readthedocs.io/)
 - [Undetected ChromeDriver (Python)](https://github.com/ultrafunkamsterdam/undetected-chromedriver)
@@ -272,4 +268,4 @@ Ce module est destiné à des fins éducatives et de test uniquement. Respectez 
 
 ---
 
-Développé avec ❤️ pour la communauté Node.js
+Built with ❤️ for the Node.js community
