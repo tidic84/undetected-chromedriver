@@ -1,0 +1,44 @@
+{
+  "name": "undetected-chromedriver-js",
+  "version": "1.1.4",
+  "description": "Node.js wrapper for undetected-chromedriver with automatic setup and cross-platform support",
+  "main": "index.js",
+  "scripts": {
+    "setup": "node scripts/setup.js",
+    "setup:minimal": "node scripts/setup-minimal.js",
+    "clean": "node scripts/clean.js",
+    "clean:windows": "node scripts/clean-windows.js",
+    "debug": "node scripts/debug.js",
+    "debug:windows": "node test/debug-windows.js",
+    "find-chrome": "node scripts/find-chrome.js",
+    "test": "node test/test.js",
+    "postinstall": "node scripts/setup-minimal.js"
+  },
+  "keywords": [
+    "selenium",
+    "chromedriver",
+    "undetected",
+    "web-scraping",
+    "automation",
+    "anti-bot",
+    "bypass"
+  ],
+  "author": "AnimeVision",
+  "license": "MIT",
+  "dependencies": {
+    "selenium-webdriver": "^4.15.0",
+    "python-shell": "^5.0.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tidic84/undetected-chromedriver-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tidic84/undetected-chromedriver-js/issues"
+  },
+  "homepage": "https://github.com/tidic84/undetected-chromedriver-js#readme"
+}
