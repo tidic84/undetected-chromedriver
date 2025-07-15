@@ -41,16 +41,114 @@ class MinimalSetup {
 
       const child = spawn(this.pythonCmd, ['-m', 'venv', this.venvPath]);
       
+      child.stderr.on('data', (data) => {
+        const error = data.toString();
+        if (error.includes('No module named venv')) {
+          console.log('\n⚠️  Python venv module not found');
+          console.log('🔄 Trying alternative methods...');
+          this.tryAlternativeVenv().then(resolve);
+          return;
+        }
+      });
+      
       child.on('close', (code) => {
         if (code === 0) {
           console.log('✓ Virtual environment created');
           resolve(true);
         } else {
           console.error('✗ Failed to create virtual environment');
+          console.log('\n💡 Try installing python3-venv:');
+          console.log('   sudo apt install python3-venv');
           resolve(false);
         }
       });
     });
+  }
+
+  async tryAlternativeVenv() {
+    // Try multiple methods to create virtual environment
+    console.log('1️⃣ Trying to install python3-venv...');
+    
+    return new Promise((resolve) => {
+      // First try installing python3-venv
+      const aptChild = spawn('sudo', ['apt', 'install', '-y', 'python3-venv'], {
+        stdio: 'pipe'
+      });
+      
+      aptChild.on('close', async (code) => {
+        if (code === 0) {
+          console.log('✓ python3-venv installed');
+          const venvResult = await this.retryCreateVenv();
+          if (venvResult) {
+            resolve(true);
+            return;
+          }
+        }
+        
+        // If that failed, try virtualenv
+        console.log('2️⃣ Trying virtualenv...');
+        const virtualenvResult = await this.tryVirtualenv();
+        if (virtualenvResult) {
+          resolve(true);
+          return;
+        }
+        
+        // Last resort: install without virtual environment
+        console.log('3️⃣ Installing globally (not recommended)...');
+        this.modifyForGlobalInstall();
+        resolve(true);
+      });
+    });
+  }
+
+  async retryCreateVenv() {
+    return new Promise((resolve) => {
+      const child = spawn(this.pythonCmd, ['-m', 'venv', this.venvPath]);
+      
+      child.on('close', (code) => {
+        if (code === 0) {
+          console.log('✓ Virtual environment created with venv');
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      });
+    });
+  }
+
+  async tryVirtualenv() {
+    return new Promise((resolve) => {
+      // Try installing virtualenv
+      const pipChild = spawn('pip3', ['install', '--user', 'virtualenv']);
+      
+      pipChild.on('close', (code) => {
+        if (code === 0) {
+          // Try creating venv with virtualenv
+          const venvChild = spawn('virtualenv', [this.venvPath]);
+          
+          venvChild.on('close', (venvCode) => {
+            if (venvCode === 0) {
+              console.log('✓ Virtual environment created with virtualenv');
+              resolve(true);
+            } else {
+              resolve(false);
+            }
+          });
+        } else {
+          resolve(false);
+        }
+      });
+    });
+  }
+
+  modifyForGlobalInstall() {
+    console.log('⚠️  Installing Python packages globally');
+    console.log('   This is not recommended but will allow the module to work');
+    
+    // Modify paths to use global Python
+    this.venvPath = '';
+    this.pipCmd = 'pip3';
+    this.pythonCmd = 'python3';
   }
 
   async installDependencies() {

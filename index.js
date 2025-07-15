@@ -5,6 +5,7 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const crypto = require('crypto');
 
 class UndetectedChrome {
   constructor(options = {}) {
@@ -19,6 +20,7 @@ class UndetectedChrome {
     };
     
     this.driver = null;
+    this.userDataDir = null;
   }
 
   async generateExecutableIfNeeded() {
@@ -126,7 +128,24 @@ if __name__ == '__main__':
         chromeOptions.addArguments('--headless=new');
       }
 
-      // Add common stealth arguments
+      // Generate unique user data directory to avoid conflicts
+      if (!this.userDataDir) {
+        const uniqueId = crypto.randomUUID();
+        const timestamp = Date.now();
+        const processId = process.pid;
+        this.userDataDir = path.join(os.tmpdir(), `chrome_undetected_${timestamp}_${processId}_${uniqueId}`);
+        
+        // Ensure directory doesn't exist (double check)
+        let counter = 0;
+        let finalDir = this.userDataDir;
+        while (fs.existsSync(finalDir) && counter < 10) {
+          counter++;
+          finalDir = `${this.userDataDir}_${counter}`;
+        }
+        this.userDataDir = finalDir;
+      }
+
+      // Add common stealth arguments - Ubuntu server specific optimizations
       const stealthArgs = [
         '--no-sandbox',
         '--disable-dev-shm-usage',
@@ -140,7 +159,13 @@ if __name__ == '__main__':
         '--disable-features=VizDisplayCompositor',
         '--ignore-certificate-errors',
         '--ignore-ssl-errors',
-        '--ignore-certificate-errors-spki-list'
+        '--ignore-certificate-errors-spki-list',
+        `--user-data-dir=${this.userDataDir}`,
+        '--remote-debugging-port=0',
+        '--disable-background-timer-throttling',
+        '--disable-backgrounding-occluded-windows',
+        '--disable-renderer-backgrounding',
+        '--single-process'
       ];
 
       stealthArgs.forEach(arg => chromeOptions.addArguments(arg));
@@ -226,6 +251,15 @@ if __name__ == '__main__':
     if (this.driver) {
       await this.driver.quit();
       this.driver = null;
+    }
+    
+    // Clean up temporary user data directory
+    if (this.userDataDir && fs.existsSync(this.userDataDir)) {
+      try {
+        fs.rmSync(this.userDataDir, { recursive: true, force: true });
+      } catch (error) {
+        console.warn(`Warning: Could not clean up user data directory: ${error.message}`);
+      }
     }
   }
 

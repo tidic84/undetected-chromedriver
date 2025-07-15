@@ -154,6 +154,14 @@ The module automatically detects the operating system and configures appropriate
 - **macOS**: `~/Library/Application Support/undetected_chromedriver/`
 - **Linux**: `~/.local/share/undetected_chromedriver/`
 
+### ✅ Tested Operating Systems
+
+This module has been successfully tested on:
+
+- **🪟 Windows 11** - Full support with automatic Chrome detection
+- **🐧 Ubuntu 22.04+** - With python3-venv package
+- **🏔️ Arch Linux** - With Python virtual environment support
+
 ## 🔍 Troubleshooting
 
 ### Error "Python not found"
@@ -162,9 +170,18 @@ The module automatically detects the operating system and configures appropriate
 python --version  # Windows
 python3 --version # Linux/macOS
 
-# Install Python
-sudo apt install python3 python3-pip  # Ubuntu/Debian
+# Install Python and required packages
+sudo apt install python3 python3-pip python3-venv  # Ubuntu/Debian
 # or download from https://python.org
+```
+
+### Error "Could not create virtual environment" (Ubuntu/Debian)
+```bash
+# Install missing venv module
+sudo apt install python3-venv
+
+# Or if that fails, install virtualenv
+pip3 install --user virtualenv
 ```
 
 ### Error "Undetected ChromeDriver not found"
